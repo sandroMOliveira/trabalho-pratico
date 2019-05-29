@@ -3,6 +3,14 @@
 import cv2
 import face_recognition
 import numpy as np
+import csv
+
+def convertMillis(millis):
+    seconds=(millis/1000)%60
+    seconds = int(seconds)
+    minutes=(millis/(1000*60))%60
+    minutes = int(minutes)
+    return f'{minutes}:{seconds}'
 
 def split_video_channels():
     print('''
@@ -38,6 +46,8 @@ def split_video_channels():
     tempo_aparicao = {}
     tempo_init = 0
     print('Seu vídeo está em processamento, vá tomar um café ou assistir um GOT!')
+    file = csv.writer(open('relatorio.csv', 'w'))
+    file.writerow(['Aparicao', 'Personagem', 'Tempo Inicial', 'Tempo Final'])
     while True:
         ret_val, frame = cap.read()
         frame_number += 1
@@ -59,18 +69,18 @@ def split_video_channels():
             # import pdb; pdb.set_trace()
             name = None
             if match[0]:
-                import pdb; pdb.set_trace()
-                tempo_init = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000 if tempo_init == 0 else 0
+                # import pdb; pdb.set_trace()
+                tempo_init = cap.get(cv2.CAP_PROP_POS_MSEC) if tempo_init == 0 else 0
                 name = "Ronaldinho"
-            elif match[0] and tempo_init > 0:
+            elif not match[0] and tempo_init > 0:
                 count_aparicao += 1
-                tempo_aparicao.update({
-                    f'ronaldinho_aparicao{count_aparicao}':  {
-                        'tempo_incial': tempo_init,
-                        'tempo_final': cap.get(cv2.CAP_PROP_POS_MSEC)/ 1000
-                    }
-                })          
-            
+                file.writerow([
+                    count_aparicao, 
+                    'Ronaldinho', 
+                    convertMillis(tempo_init), 
+                    convertMillis(cap.get(cv2.CAP_PROP_POS_MSEC))
+                ])
+                tempo_init = 0
             face_names.append(name)
 
         #Aplica a label nas faces encontradas
