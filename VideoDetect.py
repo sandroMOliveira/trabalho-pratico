@@ -46,7 +46,7 @@ def split_video_channels():
     tempo_aparicao = {}
     tempo_init = 0
     print('Seu vídeo está em processamento, vá tomar um café ou assistir um GOT!')
-    file = csv.writer(open('relatorio.csv', 'w'))
+    file = csv.writer(open('relatorio2.csv', 'w'))
     file.writerow(['Aparicao', 'Personagem', 'Tempo Inicial', 'Tempo Final'])
     while True:
         ret_val, frame = cap.read()
@@ -65,11 +65,9 @@ def split_video_channels():
         # import pdb; pdb.set_trace()
         for face_encoding in faces_encondings:
             match = face_recognition.compare_faces(find_faces, face_encoding, tolerance=0.50)
-        
-            # import pdb; pdb.set_trace()
+    
             name = None
             if match[0]:
-                # import pdb; pdb.set_trace()
                 tempo_init = cap.get(cv2.CAP_PROP_POS_MSEC) if tempo_init == 0 else 0
                 name = "Ronaldinho"
             elif not match[0] and tempo_init > 0:
